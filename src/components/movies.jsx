@@ -1,10 +1,14 @@
 import React, { Component } from "react";
 import { getMovies, deleteMovie } from "../services/fakeMovieService";
 import Like from "./common/like";
+import Pagination from "./common/pagination";
+import { paginate } from "../utils/paginate";
 
 class Movies extends Component {
   state = {
     movies: getMovies(),
+    pageSize: 5,
+    currentPageNumber: 1,
   };
 
   handleDelete = (movie) => {
@@ -22,11 +26,16 @@ class Movies extends Component {
     this.setState({ movies });
   };
 
+  handlePageChange = (pageNumber) => {
+    this.setState({ currentPageNumber: pageNumber });
+  };
+
   render() {
-    const { length: count } = this.state.movies;
+    const { movies, currentPageNumber, pageSize } = this.state;
+    const { length: count } = movies;
 
     if (count === 0) return <p>There are no movies in the database.</p>;
-
+    const moviesInCurrentPage = paginate(movies, currentPageNumber, pageSize);
     return (
       <React.Fragment>
         <p>Showing {count} movies in the database.</p>
@@ -40,7 +49,7 @@ class Movies extends Component {
             </tr>
           </thead>
           <tbody>
-            {this.state.movies.map((movie) => (
+            {moviesInCurrentPage.map((movie) => (
               <tr key={movie._id}>
                 <td>{movie.title}</td>
                 <td>{movie.genre.name}</td>
@@ -65,6 +74,12 @@ class Movies extends Component {
             ))}
           </tbody>
         </table>
+        <Pagination
+          totalItems={count}
+          pageSize={pageSize}
+          onPageChange={this.handlePageChange}
+          currentPageNumber={currentPageNumber}
+        ></Pagination>
       </React.Fragment>
     );
   }
