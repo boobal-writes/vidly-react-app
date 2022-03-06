@@ -5,6 +5,7 @@ import Pagination from "./common/pagination";
 import { paginate } from "../utils/paginate";
 import ListGroup from "./common/listGroup";
 import MoviesTable from "./moviesTable";
+import _ from "lodash";
 
 class Movies extends Component {
   state = {
@@ -13,6 +14,10 @@ class Movies extends Component {
     pageSize: 2,
     currentPageNumber: 1,
     selectedGenre: null,
+    sortColumn: {
+      path: "title",
+      order: "asc",
+    },
   };
 
   componentDidMount() {
@@ -42,11 +47,13 @@ class Movies extends Component {
   };
 
   handleGenreChange = (genre) => {
-    if (!genre) {
-      this.setState({ selectedGenre: null, currentPageNumber: 1 });
-      return;
-    }
     this.setState({ selectedGenre: genre, currentPageNumber: 1 });
+  };
+
+  handleSort = (sortColumn) => {
+    this.setState({
+      sortColumn,
+    });
   };
 
   render() {
@@ -56,7 +63,11 @@ class Movies extends Component {
       pageSize,
       genres,
       selectedGenre,
+      sortColumn,
     } = this.state;
+
+    if (allMovies.length === 0)
+      return <p>There are no movies in the database.</p>;
 
     const filteredMovies = selectedGenre
       ? allMovies.filter((movie) => movie.genre._id === selectedGenre._id)
@@ -64,14 +75,13 @@ class Movies extends Component {
 
     const { length: count } = filteredMovies;
 
-    if (allMovies.length === 0)
-      return <p>There are no movies in the database.</p>;
-
-    const moviesInCurrentPage = paginate(
+    const sorted = _.orderBy(
       filteredMovies,
-      currentPageNumber,
-      pageSize
+      [sortColumn.path],
+      [sortColumn.order]
     );
+
+    const moviesInCurrentPage = paginate(sorted, currentPageNumber, pageSize);
     return (
       <React.Fragment>
         <div className="row">
@@ -91,6 +101,8 @@ class Movies extends Component {
               movies={moviesInCurrentPage}
               onLikeToggle={this.handleLikeToggle}
               onDelete={this.handleDelete}
+              onSort={this.handleSort}
+              sortColumn={sortColumn}
             />
             <Pagination
               totalItems={count}
