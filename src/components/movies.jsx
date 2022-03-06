@@ -56,24 +56,18 @@ class Movies extends Component {
     });
   };
 
-  render() {
+  getPagedData() {
     const {
       movies: allMovies,
       currentPageNumber,
       pageSize,
-      genres,
       selectedGenre,
       sortColumn,
     } = this.state;
 
-    if (allMovies.length === 0)
-      return <p>There are no movies in the database.</p>;
-
     const filteredMovies = selectedGenre
       ? allMovies.filter((movie) => movie.genre._id === selectedGenre._id)
       : allMovies;
-
-    const { length: count } = filteredMovies;
 
     const sorted = _.orderBy(
       filteredMovies,
@@ -81,7 +75,27 @@ class Movies extends Component {
       [sortColumn.order]
     );
 
-    const moviesInCurrentPage = paginate(sorted, currentPageNumber, pageSize);
+    const movies = paginate(sorted, currentPageNumber, pageSize);
+    return {
+      totalCount: filteredMovies.length,
+      data: movies,
+    };
+  }
+
+  render() {
+    const {
+      movies: allMovies,
+      currentPageNumber,
+      pageSize,
+      genres,
+      sortColumn,
+    } = this.state;
+
+    if (allMovies.length === 0)
+      return <p>There are no movies in the database.</p>;
+
+    const { totalCount, data: movies } = this.getPagedData();
+
     return (
       <React.Fragment>
         <div className="row">
@@ -96,16 +110,16 @@ class Movies extends Component {
             ></ListGroup>
           </div>
           <div className="col-8">
-            <p>Showing {count} movies in the database.</p>
+            <p>Showing {totalCount} movies in the database.</p>
             <MoviesTable
-              movies={moviesInCurrentPage}
+              movies={movies}
               onLikeToggle={this.handleLikeToggle}
               onDelete={this.handleDelete}
               onSort={this.handleSort}
               sortColumn={sortColumn}
             />
             <Pagination
-              totalItems={count}
+              totalItems={totalCount}
               pageSize={pageSize}
               onPageChange={this.handlePageChange}
               currentPageNumber={currentPageNumber}
