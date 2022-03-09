@@ -1,13 +1,15 @@
 import React from "react";
 import Form from "./common/form";
 import Joi from "joi-browser";
+import withRouter from "../utils/routesComponentHelper";
 import { getGenres } from "./../services/fakeGenreService";
+import { getMovie, saveMovie } from "./../services/fakeMovieService";
 
 class MovieForm extends Form {
   state = {
     data: {
       title: "",
-      genre: "5b21ca3eeb7f6fbccd471814",
+      genreId: "",
       numberInStock: "",
       dailyRentalRate: "",
     },
@@ -17,12 +19,22 @@ class MovieForm extends Form {
 
   componentDidMount = () => {
     const genres = getGenres();
-    this.setState({ genres });
+    this.setState({
+      genres,
+    });
+    const movieId = this.props.match.params.id;
+    if (movieId === "new") return;
+    const movie = getMovie(movieId);
+    // if (!movie) this.props.navigate("/not-found");
+    const { title, dailyRentalRate, numberInStock } = movie;
+    this.setState({
+      data: { title, dailyRentalRate, numberInStock, genreId: movie.genre._id },
+    });
   };
 
   schema = {
     title: Joi.string().required().label("Title"),
-    genre: Joi.string().required().label("Genre"),
+    genreId: Joi.string().required().label("Genre"),
     numberInStock: Joi.number()
       .min(1)
       .max(100)
@@ -32,7 +44,11 @@ class MovieForm extends Form {
   };
 
   doSubmit = () => {
-    console.log("Submitted");
+    const movie = this.state.data;
+    const movieIdParameter = this.props.match.params.id;
+    movie._id = movieIdParameter === "new" ? null : movieIdParameter;
+    saveMovie(movie);
+    this.props.navigate("/movies", { replace: true });
   };
 
   render() {
@@ -41,7 +57,7 @@ class MovieForm extends Form {
         <h1>Movie Form</h1>
         <form onSubmit={this.handleSubmit}>
           {this.renderInput("title", "Title")}
-          {this.renderSelect("genre", "Genre", this.state.genres)}
+          {this.renderSelect("genreId", "Genre", this.state.genres)}
           {this.renderInput("numberInStock", "Number in Stock", "number")}
           {this.renderInput("dailyRentalRate", "Rate", "text")}
           {this.renderButton("Save")}
@@ -51,4 +67,4 @@ class MovieForm extends Form {
   }
 }
 
-export default MovieForm;
+export default withRouter(MovieForm);
