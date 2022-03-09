@@ -6,7 +6,7 @@ import Pagination from "./common/pagination";
 import { paginate } from "../utils/paginate";
 import ListGroup from "./common/listGroup";
 import MoviesTable from "./moviesTable";
-import SearchBox from "./common/search";
+import SearchBox from "./common/searchBox";
 import _ from "lodash";
 
 class Movies extends Component {
@@ -94,8 +94,12 @@ class Movies extends Component {
     };
   }
 
-  handleSearch = ({ target: searchInput }) => {
-    this.setState({ searchKey: searchInput.value, selectedGenre: null });
+  handleSearch = (searchKey) => {
+    this.setState({
+      searchKey: searchKey,
+      selectedGenre: null,
+      currentPageNumber: 1,
+    });
   };
 
   render() {
