@@ -6,6 +6,7 @@ import Pagination from "./common/pagination";
 import { paginate } from "../utils/paginate";
 import ListGroup from "./common/listGroup";
 import MoviesTable from "./moviesTable";
+import SearchBox from "./common/search";
 import _ from "lodash";
 
 class Movies extends Component {
@@ -19,6 +20,7 @@ class Movies extends Component {
       path: "title",
       order: "asc",
     },
+    searchKey: "",
   };
 
   componentDidMount() {
@@ -48,7 +50,11 @@ class Movies extends Component {
   };
 
   handleGenreChange = (genre) => {
-    this.setState({ selectedGenre: genre, currentPageNumber: 1 });
+    this.setState({
+      selectedGenre: genre,
+      currentPageNumber: 1,
+      searchKey: "",
+    });
   };
 
   handleSort = (sortColumn) => {
@@ -64,11 +70,16 @@ class Movies extends Component {
       pageSize,
       selectedGenre,
       sortColumn,
+      searchKey,
     } = this.state;
 
-    const filteredMovies = selectedGenre
+    let filteredMovies = selectedGenre
       ? allMovies.filter((movie) => movie.genre._id === selectedGenre._id)
       : allMovies;
+
+    filteredMovies = filteredMovies.filter((movie) =>
+      movie.title.toLowerCase().includes(searchKey.toLowerCase())
+    );
 
     const sorted = _.orderBy(
       filteredMovies,
@@ -82,6 +93,10 @@ class Movies extends Component {
       data: movies,
     };
   }
+
+  handleSearch = ({ target: searchInput }) => {
+    this.setState({ searchKey: searchInput.value, selectedGenre: null });
+  };
 
   render() {
     const {
@@ -112,9 +127,19 @@ class Movies extends Component {
           </div>
           <div className="col-8">
             <Link to="movies/new">
-              <button className="btn btn-primary">New Movie</button>{" "}
+              <button
+                className="btn btn-primary"
+                style={{ marginBottom: "20px" }}
+              >
+                New Movie
+              </button>{" "}
             </Link>
             <p>Showing {totalCount} movies in the database.</p>
+            <SearchBox
+              style={{ width: "100%" }}
+              value={this.state.searchKey}
+              onSearch={this.handleSearch}
+            ></SearchBox>
             <MoviesTable
               movies={movies}
               onLikeToggle={this.handleLikeToggle}
