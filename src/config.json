@@ -1,4 +1,4 @@
 
 {
-    "apiBaseUrlPath" : "http://localhost:3900/api"
+    "apiBaseUrlPath" : "https://boobal-vidly-api-node.herokuapp.com/api"
 }
