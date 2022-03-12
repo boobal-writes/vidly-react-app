@@ -10,6 +10,7 @@ import NotFound from "./components/notFound";
 import MovieForm from "./components/movieForm";
 import LoginForm from "./components/common/loginForm";
 import RegisterForm from "./components/register";
+import Logout from "./components/common/logout";
 import logger from "./services/logService";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -34,6 +35,7 @@ class App extends Component {
         <main className="container">
           <Routes>
             <Route path="/login" element={<LoginForm />} />
+            <Route path="/logout" element={<Logout />} />
             <Route path="/register" element={<RegisterForm />} />
             <Route path="/movies/:id" element={<MovieForm />} />
             <Route path="/movies" element={<Movies />} />
