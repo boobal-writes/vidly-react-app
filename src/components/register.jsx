@@ -1,7 +1,8 @@
 import React from "react";
 import Joi from "joi-browser";
+import { toast } from "react-toastify";
 import Form from "./common/form";
-import { render } from "@testing-library/react";
+import { registerUser } from "../services/userService";
 
 class RegisterForm extends Form {
   state = {
@@ -19,8 +20,17 @@ class RegisterForm extends Form {
     name: Joi.string().required().label("Name"),
   };
 
-  doSubmit = () => {
-    console.log("Submitted");
+  doSubmit = async () => {
+    try {
+      const { username, password, name } = this.state.data;
+      const user = { email: username, password, name };
+      await registerUser(user);
+      toast("User registered successfully");
+    } catch (error) {
+      if (error.response && error.response.status === 400) {
+        toast.error(error.response.data);
+      }
+    }
   };
 
   render() {
@@ -30,7 +40,7 @@ class RegisterForm extends Form {
         <form onSubmit={this.handleSubmit}>
           {this.renderInput("username", "Username")}
           {this.renderInput("password", "Password", "password")}
-          {this.renderInput("name", "name")}
+          {this.renderInput("name", "Name")}
           {this.renderButton("Register")}
         </form>
       </React.Fragment>
