@@ -5,6 +5,8 @@ const apiEndpoint = config.apiBaseUrlPath + "/auth";
 
 const tokenKey = "jwt";
 
+http.setAuthToken(getAuthToken());
+
 async function login(email, password) {
   const { data: token } = await http.post(apiEndpoint, { email, password });
   loginWithJwtToken(token);

@@ -1,8 +1,5 @@
 import axios from "axios";
 import { toast } from "react-toastify";
-import auth from "./authService";
-
-axios.defaults.headers.common["x-auth-token"] = auth.getAuthToken();
 
 axios.interceptors.response.use(null, (error) => {
   const expectedError =
@@ -18,11 +15,16 @@ axios.interceptors.response.use(null, (error) => {
   return Promise.reject(error);
 });
 
+function setAuthToken(token) {
+  axios.defaults.headers.common["x-auth-token"] = token;
+}
+
 const http = {
   get: axios.get,
   post: axios.post,
   put: axios.put,
   delete: axios.delete,
+  setAuthToken,
 };
 
 export default http;
