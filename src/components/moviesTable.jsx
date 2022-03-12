@@ -1,3 +1,4 @@
+import userEvent from "@testing-library/user-event";
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import Like from "./common/like";
@@ -30,6 +31,7 @@ class MoviesTable extends Component {
         <button
           onClick={() => this.props.onDelete(movie)}
           className="btn btn-danger btn-sm"
+          disabled={!this.props.user || !this.props.user.isAdmin || false}
         >
           Delete
         </button>

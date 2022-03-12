@@ -120,6 +120,8 @@ class Movies extends Component {
       sortColumn,
     } = this.state;
 
+    const { user } = this.props;
+
     if (allMovies.length === 0)
       return <p>There are no movies in the database.</p>;
 
@@ -139,14 +141,16 @@ class Movies extends Component {
             ></ListGroup>
           </div>
           <div className="col-8">
-            <Link to="movies/new">
-              <button
-                className="btn btn-primary"
-                style={{ marginBottom: "20px" }}
-              >
-                New Movie
-              </button>{" "}
-            </Link>
+            {user && (
+              <Link to="movies/new">
+                <button
+                  className="btn btn-primary"
+                  style={{ marginBottom: "20px" }}
+                >
+                  New Movie
+                </button>
+              </Link>
+            )}
             <p>Showing {totalCount} movies in the database.</p>
             <SearchBox
               style={{ width: "100%" }}
@@ -159,6 +163,7 @@ class Movies extends Component {
               onDelete={this.handleDelete}
               onSort={this.handleSort}
               sortColumn={sortColumn}
+              user={user}
             />
             <Pagination
               totalItems={totalCount}
