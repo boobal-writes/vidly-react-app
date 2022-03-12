@@ -27,11 +27,16 @@ function getCurrentUser() {
   }
 }
 
+function getAuthToken() {
+  return localStorage.getItem(tokenKey);
+}
+
 const auth = {
   login,
   logout,
   getCurrentUser,
   loginWithJwtToken,
+  getAuthToken,
 };
 
 export default auth;
