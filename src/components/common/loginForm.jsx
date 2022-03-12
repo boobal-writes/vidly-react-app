@@ -3,7 +3,7 @@ import Joi from "joi-browser";
 import { toast } from "react-toastify";
 import withRouter from "./../../utils/routesComponentHelper";
 import Form from "./form";
-import { login } from "../../services/authService";
+import auth from "../../services/authService";
 
 class LoginForm extends Form {
   state = {
@@ -22,8 +22,8 @@ class LoginForm extends Form {
   doSubmit = async () => {
     try {
       const { data } = this.state;
-      const { data: token } = await login(data.username, data.password);
-      localStorage.setItem("jwt", token);
+      await auth.login(data.username, data.password);
+
       window.location = "/";
     } catch (error) {
       if (error.response && error.response.status === 400) {
