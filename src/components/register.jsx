@@ -3,6 +3,7 @@ import Joi from "joi-browser";
 import { toast } from "react-toastify";
 import Form from "./common/form";
 import { registerUser } from "../services/userService";
+import withRouter from "./../utils/routesComponentHelper";
 
 class RegisterForm extends Form {
   state = {
@@ -24,8 +25,9 @@ class RegisterForm extends Form {
     try {
       const { username, password, name } = this.state.data;
       const user = { email: username, password, name };
-      await registerUser(user);
-      toast("User registered successfully");
+      const response = await registerUser(user);
+      localStorage.setItem("jwt", response.headers["x-auth-token"]);
+      this.props.navigate("/movies", { replace: true });
     } catch (error) {
       if (error.response && error.response.status === 400) {
         toast.error(error.response.data);
@@ -48,4 +50,4 @@ class RegisterForm extends Form {
   }
 }
 
-export default RegisterForm;
+export default withRouter(RegisterForm);
