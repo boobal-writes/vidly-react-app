@@ -1,6 +1,9 @@
 import React from "react";
 import Joi from "joi-browser";
+import { toast } from "react-toastify";
+import withRouter from "./../../utils/routesComponentHelper";
 import Form from "./form";
+import { login } from "../../services/authService";
 
 class LoginForm extends Form {
   state = {
@@ -12,16 +15,27 @@ class LoginForm extends Form {
   };
 
   schema = {
-    username: Joi.string().required().label("Username"),
-    password: Joi.string().required().label("Password"),
+    username: Joi.string().email().min(5).required().label("Username"),
+    password: Joi.string().min(5).required().label("Password"),
   };
 
-  doSubmit = () => {
-    console.log("Submitted");
+  doSubmit = async () => {
+    try {
+      const { data } = this.state;
+      const { data: token } = await login(data.username, data.password);
+      localStorage.setItem("jwt", token);
+      this.props.navigate("/movies", { replace: true });
+    } catch (error) {
+      if (error.response && error.response.status === 400) {
+        toast.error(error.response.data);
+        const { ...errors } = this.state;
+        errors.username = error.response.data;
+        this.setState({ errors });
+      }
+    }
   };
 
   render() {
-    const { data, errors } = this.state;
     return (
       <div>
         <h1>Login</h1>
@@ -35,4 +49,4 @@ class LoginForm extends Form {
   }
 }
 
-export default LoginForm;
+export default withRouter(LoginForm);
