@@ -27,7 +27,7 @@ class RegisterForm extends Form {
       const user = { email: username, password, name };
       const response = await registerUser(user);
       localStorage.setItem("jwt", response.headers["x-auth-token"]);
-      this.props.navigate("/movies", { replace: true });
+      window.location = "/";
     } catch (error) {
       if (error.response && error.response.status === 400) {
         toast.error(error.response.data);

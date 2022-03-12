@@ -24,7 +24,7 @@ class LoginForm extends Form {
       const { data } = this.state;
       const { data: token } = await login(data.username, data.password);
       localStorage.setItem("jwt", token);
-      this.props.navigate("/movies", { replace: true });
+      window.location = "/";
     } catch (error) {
       if (error.response && error.response.status === 400) {
         toast.error(error.response.data);
