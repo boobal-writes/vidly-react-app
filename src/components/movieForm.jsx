@@ -2,8 +2,9 @@ import React from "react";
 import Form from "./common/form";
 import Joi from "joi-browser";
 import withRouter from "../utils/routesComponentHelper";
-import { getGenres } from "./../services/fakeGenreService";
-import { getMovie, saveMovie } from "./../services/fakeMovieService";
+import { getGenres } from "./../services/genreService";
+import { getMovie, createMovie, updateMovie } from "./../services/movieService";
+import { toast } from "react-toastify";
 
 class MovieForm extends Form {
   state = {
@@ -17,20 +18,41 @@ class MovieForm extends Form {
     genres: [],
   };
 
-  componentDidMount = () => {
-    const genres = getGenres();
+  populateGenres = async () => {
+    const genres = await getGenres();
     this.setState({ genres });
+  };
 
-    const movieId = this.props.match.params.id;
-    if (movieId === "new") return;
+  populateMovie = async () => {
+    try {
+      const movieId = this.props.match.params.id;
+      if (movieId === "new") return;
 
-    const movie = getMovie(movieId);
-    // if (!movie) this.props.navigate("/not-found");
+      const movie = await getMovie(movieId);
+      this.setState({
+        data: this.mapToViewModel(movie),
+      });
+    } catch (error) {
+      if (error.response && error.response.status === 404) {
+        this.props.navigate("/not-found");
+      }
+    }
+  };
 
+  mapToViewModel = (movie) => {
     const { title, dailyRentalRate, numberInStock } = movie;
-    this.setState({
-      data: { title, dailyRentalRate, numberInStock, genreId: movie.genre._id },
-    });
+    const viewModel = {
+      title,
+      dailyRentalRate,
+      numberInStock,
+      genreId: movie.genre._id,
+    };
+    return viewModel;
+  };
+
+  componentDidMount = async () => {
+    await this.populateGenres();
+    await this.populateMovie();
   };
 
   schema = {
@@ -44,11 +66,16 @@ class MovieForm extends Form {
     dailyRentalRate: Joi.number().min(0.5).max(5).required().label("Rate"),
   };
 
-  doSubmit = () => {
+  doSubmit = async () => {
     const movie = this.state.data;
     const movieIdParameter = this.props.match.params.id;
-    movie._id = movieIdParameter === "new" ? null : movieIdParameter;
-    saveMovie(movie);
+    if (movieIdParameter == "new") {
+      await createMovie(movie);
+      toast("Created successfully!");
+    } else {
+      await updateMovie(movie, movieIdParameter);
+      toast("Updated successfully!");
+    }
     this.props.navigate("/movies", { replace: true });
   };
 
