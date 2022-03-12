@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import { getMovies, deleteMovie } from "../services/fakeMovieService";
-import { getGenres } from "../services/fakeGenreService";
+import { getGenres } from "../services/genreService";
 import Pagination from "./common/pagination";
 import { paginate } from "../utils/paginate";
 import ListGroup from "./common/listGroup";
@@ -23,10 +23,10 @@ class Movies extends Component {
     searchKey: "",
   };
 
-  componentDidMount() {
+  componentDidMount = async() => {
     this.setState({
       movies: getMovies(),
-      genres: getGenres(),
+      genres: await getGenres(),
     });
   }
 
