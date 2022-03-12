@@ -1,4 +1,4 @@
 
 {
-    "apiEndpoint" : "http://localhost:3900/api"
+    "apiBaseUrlPath" : "http://localhost:3900/api"
 }
