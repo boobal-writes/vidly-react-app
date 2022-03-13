@@ -20,13 +20,16 @@
     "react-router-dom": "^6.2.2",
     "react-scripts": "5.0.0",
     "react-toastify": "^8.2.0",
+    "server": "^1.0.37",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "dev": "react-scripts start",
+    "start": "serve -s build",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "heroku-postbuild": "npm run build"
   },
   "eslintConfig": {
     "extends": [
