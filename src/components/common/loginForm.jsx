@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import withRouter from "./../../utils/routesComponentHelper";
 import Form from "./form";
 import auth from "../../services/authService";
+import { Navigate } from "react-router-dom";
 
 class LoginForm extends Form {
   state = {
@@ -24,7 +25,8 @@ class LoginForm extends Form {
       const { data } = this.state;
       await auth.login(data.username, data.password);
 
-      window.location = "/";
+      const { state } = this.props.location;
+      window.location = state ? state.from.pathname : "/";
     } catch (error) {
       if (error.response && error.response.status === 400) {
         toast.error(error.response.data);
@@ -36,6 +38,7 @@ class LoginForm extends Form {
   };
 
   render() {
+    if (auth.getCurrentUser()) return <Navigate to="/" />;
     return (
       <div>
         <h1>Login</h1>
