@@ -43,7 +43,7 @@ class App extends Component {
                 </RequireAuth>
               }
             />
-            <Route path="/movies" element={<Movies />} />
+            <Route path="/movies" element={<Movies user={user} />} />
             <Route path="/customers" element={<Customers />} />
             <Route path="/rentals" element={<Rentals />} />
 
